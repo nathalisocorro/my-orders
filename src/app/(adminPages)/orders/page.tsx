@@ -220,7 +220,7 @@ export default function OrdersPage() {
       
       return (
           <>
-        <Dialog open={open} onOpenChange={() => setOpen(false)}>
+        <Dialog open={open} onOpenChange={() => setOpen(!open)}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">

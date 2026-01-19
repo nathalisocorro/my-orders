@@ -21,7 +21,7 @@ export interface Props {
 export default function ModalForm({data}: Props) {
   const [open, setOpen] = useState(false)
   return (
-    <Dialog open={open} onOpenChange={() => setOpen(false)}>
+    <Dialog open={open} onOpenChange={() => setOpen(!open)}>
         <DialogTrigger asChild>
           <Button onClick={() => setOpen(true)} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
         </DialogTrigger>
