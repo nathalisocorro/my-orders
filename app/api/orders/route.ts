@@ -1,5 +1,4 @@
 import prisma from "@/lib/db"
-import { URL } from "next/dist/compiled/@edge-runtime/primitives/url"
 import { NextRequest, NextResponse } from "next/server"
 
 
