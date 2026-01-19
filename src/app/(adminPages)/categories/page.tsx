@@ -1,6 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge, ClipboardList } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 const categories = [{
   id: 1,
@@ -68,6 +69,7 @@ export default function CategoriesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4 my-10">
               {
               categories.map((category) => (
+                <Link href={`/categories/${category.slug}`} key={category.id}>
                 <Card key={category.id} className="w-full h-full p-0 m-0 shadow-gray-400">
                   <CardHeader className="p-0">
                     <div className="relative w-full h-full">
@@ -89,6 +91,7 @@ export default function CategoriesPage() {
                     {category.products.length} products fit this category
                   </CardFooter>
                 </Card>
+                </Link>
               ))
             }
             </div>
