@@ -1,4 +1,4 @@
-import prisma from "@/lib/db"
+import prisma from "@/src/lib/db"
 import { NextResponse } from "next/server"
 
 //Fetch all categories of the different products:
