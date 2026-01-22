@@ -1,9 +1,11 @@
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Box } from "lucide-react"
-import Image from "next/image"
+"use client"
 
-const products = [{
+import ProductsComponent from "@/components/products"
+import { Box } from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
+
+/* const products = [{
       id: 1,
       title: "Bowls set",
       desc: "Ready to use for your next family trip, made with the best materials.",
@@ -36,44 +38,50 @@ const products = [{
       categorySlug: "bath&body"
     }
   
-  ]
+  ] */
+
+
+    const fetchProducts = async () => {
+  try{
+    const response = await fetch('/api/products')
+    console.log(response)
+    if(!response.ok) {
+      toast("There's been an error in your request")
+    }
+    const data = response.json()
+    return data
+  }
+
+  catch(err) {
+    console.log(err)
+    toast("There's been an error in your request")
+    return null
+  }
+}
 
 export default function ProductsPage() {
 
+    const [products, setProducts] = useState<any[]>([])
+    const [loading, setLoading] = useState(false)
+    
+    useEffect(() => {
+      const getProducts = async () => {
+        setLoading(true)
+        const data = await fetchProducts();
+        setProducts(data.products || [])
+        setLoading(false)
+      }
 
+      getProducts()
+    }, [])
+
+        
     return(
         <div className="flex bg-[#d7eff5] min-h-screen justify-start">
           <main className="mx-4 my-5 w-full">
             <div className="flex justify-start gap-2 items-end"><h1 className="text-4xl font-extrabold">Products</h1><Box size={"40"} /></div>
             <h3 className="text-md text-gray-500 mt-1 font-bold">Registry of all the products available</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4 my-10">
-              {
-              products.map((product) => (
-                <Card key={product.id} className="w-full h-full p-0 m-0 shadow-gray-400">
-                  <CardHeader className="p-0">
-                    <div className="relative w-full h-full">
-                      <Image
-                      src={"./placeholder.svg"}
-                      alt={product.title}
-                      height={"80"}
-                      width={"80"}
-                      className="object-fill w-full max-h-50 rounded-lg"
-                      />
-                      <Badge className="absolute top-3 right-2" color="#3eb2b4">{product.categorySlug}</Badge>
-                      <h2 className="absolute bottom-3 left-3 text-lg font-bold">{product.title}</h2>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="font-medium text-md">
-                    {product.desc}
-                  </CardContent>
-
-                  <CardFooter className="pb-4 text-xl font-extrabold text-[#FDBB2D]">
-                    ${product.price}
-                  </CardFooter>
-                </Card>
-              ))
-            }
-            </div>
+            {loading ? <span>Cargando...</span> : <ProductsComponent products={products} />}
           </main>
         </div>
     )

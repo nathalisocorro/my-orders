@@ -41,31 +41,7 @@ import ModalForm from "@/components/modal"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import ModalBase from "@/components/modalBase"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-
-export const data: Order[] = [ 
-  { id: "ord_001", 
-    createdAt: "2026-01-18T14:32:00Z", 
-    total: 89.99, 
-    products: [ 
-      { id: '1', title: "Sunset Hoodie", quantity: 1, price: 49.99 }, 
-      { id: '2', title: "Palm Tree Cap", quantity: 2, price: 20.00 }, ], 
-    status: "PAID", 
-    userId: "user_123", }, 
-    { 
-    id: "ord_002", 
-    createdAt: "2026-01-17T10:15:00Z", 
-    total: 59.50, products: [ 
-      { id:'3', title: "Beach Towel", quantity: 1, price: 25.00 }, 
-      { id: '4', title: "Sunset Mug", quantity: 2, price: 17.25 }, ], 
-    status: "PENDING", userId: "user_456", }, 
-    { 
-    id: "ord_003", 
-    createdAt: "2026-01-16T18:45:00Z", 
-    total: 34.00, 
-    products: [ 
-      { id: "prod_005", title: "Sticker Pack", quantity: 4, price: 8.50 }, ], 
-    status: "CANCELED", 
-    userId: "user_789", }, ]
+import { toast } from "sonner"
 
 export type Order = {
   id: string,
@@ -76,7 +52,41 @@ export type Order = {
   userId: String
 }
 
+const fetchOrders = async () => {
+  try{
+    const response = await fetch('/api/orders')
+    console.log(response)
+    if(!response.ok) {
+      toast("There's been an error in your request")
+    }
+    const data = response.json()
+    return data
+  }
+
+  catch(err) {
+    console.log(err)
+    toast("There's been an error in your request")
+    return null
+  }
+}
+
 export default function OrdersPage() {
+
+   const [data, setData] = React.useState<any[]>([])
+      const [loading, setLoading] = React.useState(false)
+  
+    React.useEffect(() => {
+      const getOrders = async () => {
+        setLoading(true)
+        const data = await fetchOrders();
+        console.log(data)
+        setData(data.orders || [])
+        setLoading(false)
+      }
+
+      getOrders()
+    }, [])
+
   const [alert, setAlert] = React.useState(false)
   const [pagination, setPagination] = React.useState<PaginationState>({
   pageIndex: 0,

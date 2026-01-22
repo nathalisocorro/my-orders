@@ -1,3 +1,5 @@
+"use client"
+
 import { Label } from "@radix-ui/react-label";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader } from "./ui/sidebar";
 import { Box, ClipboardList, ListOrdered, LogOut, Palmtree, PalmtreeIcon, ShoppingBag, Users } from "lucide-react";
@@ -7,8 +9,12 @@ import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function AppSidebar() {
+
+    const pathname = usePathname()
+    const router = useRouter()
     return (
         <>
         <Sidebar>
@@ -20,28 +26,28 @@ export default function AppSidebar() {
           </SidebarHeader>
             <SidebarContent >
             <SidebarGroup>
-                <Link href={"/"} className="py-3 hover:text-[#FDBB2D]">
+                <Link href={"/"} className={`py-3 ${pathname === "/" ? "text-[#FDBB2D]" : "text-black"} hover:text-[#FDBB2D]`}>
                     <div className="flex flex-start items-center gap-2 font-bold py-2 px-3">
                     <Palmtree />
                     <h3>Home</h3>
                     </div>
                     <h6 className="text-gray-500 text-sm px-3">Main page</h6>
                 </Link>
-                <Link href={"/categories"} className="py-3 hover:text-[#FDBB2D]">
+                <Link href={"/categories"} className={`py-3 ${pathname === "/categories" ? "text-[#FDBB2D]" : "text-black"} hover:text-[#FDBB2D]`}>
                     <div className="flex flex-start items-center gap-2 font-bold py-2 px-3">
                     <ClipboardList />
                     <h3>Categories</h3>
                     </div>
                     <h6 className="text-gray-500 text-sm px-3">List all the available categories</h6>
                 </Link>
-                <Link href={"/products"} className="py-3 hover:text-[#FDBB2D]">
+                <Link href={"/products"} className={`py-3 ${pathname === "/products" ? "text-[#FDBB2D]" : "text-black"} hover:text-[#FDBB2D]`}>
                     <div className="flex flex-start items-center gap-2 font-bold py-2 px-3">
                     <Box />
                     <h3>Our products</h3>
                     </div>
                     <h6 className="text-gray-500 text-sm px-3">List all the available products</h6>
                 </Link>
-                <Link href={"/orders"} className="py-3 hover:text-[#FDBB2D]">
+                <Link href={"/orders"} className={`py-3 ${pathname === "/orders" ? "text-[#FDBB2D]" : "text-black"} hover:text-[#FDBB2D]`}>
                     <div className="flex flex-start items-center gap-2 font-bold py-2 px-3">
                     <ShoppingBag />
                     Orders

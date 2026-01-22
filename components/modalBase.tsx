@@ -93,7 +93,7 @@ const showToast = (msg='Invalid operation') => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('click')
+
     if (!selectedProductIds.length || selectedProductIds.length === 0) {
       showToast("You must pick at least one item from the products list")
       return
