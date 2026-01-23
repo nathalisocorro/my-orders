@@ -353,7 +353,7 @@ export default function OrdersPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className=" rounded-md border overflow-x-auto max-w-[55vw] sm:max-w-[50vw] lg:max-w-[60vw] xl:max-w-[80vw]">
+              <div className="rounded-md border overflow-x-auto grid place-items-center mx-auto">
                   <Table className="min-w-250 bg-white ">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
