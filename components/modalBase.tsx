@@ -1,6 +1,5 @@
 "use client"
 import { useMemo, useRef, useState } from "react";
-import { Props } from "./modal";
 import { Button } from "./ui/button";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -112,6 +111,26 @@ const addOrders = async (newOrder: Order) => {
   }
 }
 
+const updateOrders = async (orderToUpdate: Order) => {
+  try{
+    const response = await fetch('/api/orders', {
+      method:'PUT',
+      body: JSON.stringify(orderToUpdate)
+    })
+    console.log(response)
+    if(!response.ok) {
+      toast("There's been an error in your request")
+    }
+    const data = response.json()
+    console.log(data)
+  }
+
+  catch(err) {
+    console.error(err)
+    toast("There's been an error in your request")
+  }
+}
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -129,14 +148,16 @@ const addOrders = async (newOrder: Order) => {
       return
     }
     const order = {
+      id: data.id || null,
       total: totalPrice || 0,
       products: [...selectedProductIds],     
-      status: formValues.status || "PENDING",
-      userId: formValues.userId || ''
+      status: formValues.status.toString() || "PENDING",
+      userId: formValues.userId.toString() || '',
+      createdAt: data?.createdAt || null
     }
-
     setSelectedProductIds([])
-    if(!data) addOrders(data)
+    if(!data) addOrders(order)
+    else updateOrders(order)
     console.log("order: ", order)
     showToast('Success! Your changes have been saved')
     onSuccess()

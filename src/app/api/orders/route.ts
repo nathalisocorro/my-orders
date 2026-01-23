@@ -26,3 +26,19 @@ export const POST = async (request: NextRequest) => {
         return new NextResponse(JSON.stringify({message: 'There has been an error processing your request'+error}), {status: 500})
     }
 }
+
+export const PUT = async (request: NextRequest) => {
+    const body = await request.json()
+    try{
+      const order = await prisma.order.update({
+        data: body,
+        where: {
+           id: body.id
+        }
+      })
+        return new NextResponse(JSON.stringify({message: 'Success', order: order}), {status: 200})
+    }
+    catch(error) {
+        return new NextResponse(JSON.stringify({message: 'There has been an error processing your request'+error}), {status: 500})
+    }
+}

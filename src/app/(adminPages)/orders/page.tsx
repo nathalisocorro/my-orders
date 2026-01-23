@@ -45,11 +45,11 @@ import { toast } from "sonner"
 import LoadingComponent from "@/components/loading"
 
 export type Order = {
-  id: string,
+  id?: string,
   createdAt: string,
   total: number,
   products: any[]   ,    
-  status: "PENDING" | "PAID" | "CANCELED",
+  status: string,
   userId: String
 }
 
@@ -242,7 +242,7 @@ export default function OrdersPage() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(order.id)}
+              onClick={() => navigator.clipboard.writeText(order?.id || '')}
               className="text-center"
             >
               Copy order ID
