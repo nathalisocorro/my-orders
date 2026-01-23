@@ -148,12 +148,12 @@ const updateOrders = async (orderToUpdate: Order) => {
       return
     }
     const order = {
-      id: data.id || null,
+      id: data ? data.id : null,
       total: totalPrice || 0,
       products: [...selectedProductIds],     
       status: formValues.status.toString() || "PENDING",
       userId: formValues.userId.toString() || '',
-      createdAt: data?.createdAt || null
+      createdAt: data ? data.createdAt : null,
     }
     setSelectedProductIds([])
     if(!data) addOrders(order)

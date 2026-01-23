@@ -16,6 +16,7 @@ export const GET = async () => {
 
 export const POST = async (request: NextRequest) => {
     const body = await request.json()
+    console.log(body)
     try{
       const order = await prisma.order.create({
         data: body,
@@ -29,6 +30,7 @@ export const POST = async (request: NextRequest) => {
 
 export const PUT = async (request: NextRequest) => {
     const body = await request.json()
+    
     try{
       const order = await prisma.order.update({
         data: body,

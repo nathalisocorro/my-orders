@@ -48,7 +48,7 @@ export type Order = {
   id?: string,
   createdAt: string,
   total: number,
-  products: any[]   ,    
+  products: any[],    
   status: string,
   userId: String
 }
@@ -353,7 +353,7 @@ export default function OrdersPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className=" rounded-md border overflow-x-auto w-full">
+              <div className=" rounded-md border overflow-x-auto max-w-[55vw] sm:max-w-[50vw] lg:max-w-[60vw] xl:max-w-[80vw]">
                   <Table className="min-w-250 bg-white ">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
