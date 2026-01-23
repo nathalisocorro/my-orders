@@ -42,6 +42,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import ModalBase from "@/components/modalBase"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { toast } from "sonner"
+import LoadingComponent from "@/components/loading"
 
 export type Order = {
   id: string,
@@ -73,7 +74,7 @@ const fetchOrders = async () => {
 export default function OrdersPage() {
 
    const [data, setData] = React.useState<any[]>([])
-      const [loading, setLoading] = React.useState(false)
+   const [loading, setLoading] = React.useState(false)
   
     React.useEffect(() => {
       const getOrders = async () => {
@@ -393,9 +394,9 @@ export default function OrdersPage() {
                       <TableRow>
                         <TableCell
                           colSpan={columns.length}
-                          className="h-24 text-center"
+                          className="h-30 text-center"
                         >
-                          No orders found
+                          {loading ? <LoadingComponent /> : <span>No orders found</span>}
                         </TableCell>
                       </TableRow>
                     )}

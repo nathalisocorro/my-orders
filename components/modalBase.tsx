@@ -13,6 +13,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "./ui/dropdown-menu";
 import { toast } from "sonner";
+import { Order } from "@/src/app/(adminPages)/orders/page";
 
 const users = [
     {
@@ -91,6 +92,26 @@ const showToast = (msg='Invalid operation') => {
   toast(msg)
 }
 
+const addOrders = async (newOrder: Order) => {
+  try{
+    const response = await fetch('/api/orders', {
+      method:'POST',
+      body: JSON.stringify(newOrder)
+    })
+    console.log(response)
+    if(!response.ok) {
+      toast("There's been an error in your request")
+    }
+    const data = response.json()
+    console.log(data)
+  }
+
+  catch(err) {
+    console.error(err)
+    toast("There's been an error in your request")
+  }
+}
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -115,6 +136,7 @@ const showToast = (msg='Invalid operation') => {
     }
 
     setSelectedProductIds([])
+    if(!data) addOrders(data)
     console.log("order: ", order)
     showToast('Success! Your changes have been saved')
     onSuccess()

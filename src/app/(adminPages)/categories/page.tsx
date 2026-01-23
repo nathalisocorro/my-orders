@@ -2,6 +2,7 @@
 
 
 import CategoriesComponent from "@/components/categories"
+import LoadingComponent from "@/components/loading"
 import { ClipboardList } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -101,7 +102,7 @@ export default function CategoriesPage() {
                 
               </div>
             </div>
-            {loading ? <span>Cargando ...</span> : <CategoriesComponent categories={categories} />}
+            {loading ? <LoadingComponent /> : <CategoriesComponent categories={categories} />}
           </main>
         </div>
     )
