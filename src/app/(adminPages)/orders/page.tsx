@@ -43,21 +43,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import LoadingComponent from "@/components/loading"
 import FetchOrders from "@/hooks/orders-hooks"
 import { toast } from "sonner"
-
-export type Order = {
-  id?: string,
-  createdAt: string,
-  total: number,
-  products: any[],    
-  status: string,
-  userId: String
-}
+import { Order } from "@/types"
 
 export default function OrdersPage() {
 
   const { orders, loading, deleteOrders, addOrders, updateOrders } = FetchOrders()
   const [open, setOpen] = React.useState(false)
-  const [editing, setEditing] = React.useState<Order|null>(null)
+  const [editing, setEditing] = React.useState<Order|undefined>(undefined)
 
   const [alert, setAlert] = React.useState(false)
   const [pagination, setPagination] = React.useState<PaginationState>({
@@ -71,7 +63,7 @@ const handleOpen = (order: any) => {
 }
 
 const handleSuccess = () => {
-  setEditing(null)
+  setEditing(undefined)
   setOpen(false)
 }
 

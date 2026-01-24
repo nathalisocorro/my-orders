@@ -13,6 +13,8 @@ import {
 } from "./ui/dropdown-menu";
 import { toast } from "sonner";
 import FetchOrders from "@/hooks/orders-hooks";
+import { Order } from "@/types";
+
 
 /* const users = [
     {
@@ -67,7 +69,7 @@ const products = [{
   
   ] */
 interface ModalBaseProps {
-  data?: any,
+  data?: Order,
   onSuccess: () => void,
   onSave: (o: any) => void,
 }
@@ -169,7 +171,7 @@ const showToast = (msg='Invalid operation') => {
           <div className="grid gap-4 mt-4">
             <div className="grid gap-3">
               <Label htmlFor="status">Status</Label>
-              <Select name="status" required defaultValue={data ? data.status : null}>
+              <Select name="status" required defaultValue={data ? data.status : undefined}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a status" />
                 </SelectTrigger>
@@ -185,7 +187,7 @@ const showToast = (msg='Invalid operation') => {
             </div>
             <div className="grid gap-3">
               <Label htmlFor="userId">Username</Label>
-              <Select name="userId" required defaultValue={data ? data.userId : null}>
+              <Select name="userId" required defaultValue={data ? data.userId : undefined}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an user" />
                 </SelectTrigger>
