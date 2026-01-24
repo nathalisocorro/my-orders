@@ -1,5 +1,5 @@
 "use client"
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -12,9 +12,9 @@ import {
   DropdownMenuCheckboxItem,
 } from "./ui/dropdown-menu";
 import { toast } from "sonner";
-import { Order } from "@/src/app/(adminPages)/orders/page";
+import FetchOrders from "@/hooks/orders-hooks";
 
-const users = [
+/* const users = [
     {
         id:'user_123',
         name: 'Steven',
@@ -65,13 +65,19 @@ const products = [{
       categorySlug: "bath&body"
     }
   
-  ]
+  ] */
 interface ModalBaseProps {
   data?: any,
-  onSuccess: () => void
+  onSuccess: () => void,
+  onSave: (o: any) => void,
 }
-export default function ModalBase({data, onSuccess} : ModalBaseProps) {
-  const [selectedProductIds, setSelectedProductIds] = useState<string[]>(data ? data.products.map((p:any) => p.id) : [])
+export default function ModalBase({data, onSuccess, onSave} : ModalBaseProps) {
+
+  const { loading, addOrders } = FetchOrders()
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>(data ? [...data.products] : [])
+  const [users, setUsers] = useState<any[]>([])
+  const [products, setProducts] = useState<any[]>([])
+
   const ref = useRef<HTMLFormElement>(null)
   function toggleProduct(id: string) {
   setSelectedProductIds((prev) =>
@@ -80,6 +86,33 @@ export default function ModalBase({data, onSuccess} : ModalBaseProps) {
       : [...prev, id]
   )
 }
+
+useEffect(() => {
+  const loadData = async () => {
+    try {
+      const [usersRes, productsRes] = await Promise.all([
+        fetch("/api/user"),
+        fetch("/api/products"),
+      ])
+
+      if (!usersRes.ok || !productsRes.ok) {
+        throw new Error("Error fetching data")
+      }
+
+      const [usersData, productsData] = await Promise.all([
+        usersRes.json(),
+        productsRes.json(),
+      ])
+
+      setUsers(usersData.users)
+      setProducts(productsData.products)
+    } catch (error) {
+      toast.error("Error loading data")
+    }
+  }
+  loadData()
+}, [])
+
 
 const totalPrice = useMemo(() => {
   return products
@@ -91,47 +124,8 @@ const showToast = (msg='Invalid operation') => {
   toast(msg)
 }
 
-const addOrders = async (newOrder: Order) => {
-  try{
-    const response = await fetch('/api/orders', {
-      method:'POST',
-      body: JSON.stringify(newOrder)
-    })
-    console.log(response)
-    if(!response.ok) {
-      toast("There's been an error in your request")
-    }
-    const data = response.json()
-    console.log(data)
-  }
 
-  catch(err) {
-    console.error(err)
-    toast("There's been an error in your request")
-  }
-}
-
-const updateOrders = async (orderToUpdate: Order) => {
-  try{
-    const response = await fetch('/api/orders', {
-      method:'PUT',
-      body: JSON.stringify(orderToUpdate)
-    })
-    console.log(response)
-    if(!response.ok) {
-      toast("There's been an error in your request")
-    }
-    const data = response.json()
-    console.log(data)
-  }
-
-  catch(err) {
-    console.error(err)
-    toast("There's been an error in your request")
-  }
-}
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedProductIds.length || selectedProductIds.length === 0) {
@@ -155,10 +149,9 @@ const updateOrders = async (orderToUpdate: Order) => {
       userId: formValues.userId.toString() || '',
       createdAt: data ? data.createdAt : null,
     }
-    setSelectedProductIds([])
-    if(!data) addOrders(order)
-    else updateOrders(order)
-    console.log("order: ", order)
+    setSelectedProductIds([]);
+    console.log('la orden a guardar', order)
+    onSave(order);
     showToast('Success! Your changes have been saved')
     onSuccess()
   }
@@ -200,7 +193,7 @@ const updateOrders = async (orderToUpdate: Order) => {
                   <SelectGroup>
                     <SelectLabel>Username</SelectLabel>
                     {users.map(u => (
-                      <SelectItem value={u.id} key={u.id}>{u.name}</SelectItem>
+                      <SelectItem value={u.id} key={u.id}>{u.email}</SelectItem>
                     ))}
                   </SelectGroup>
                 </SelectContent>
@@ -244,7 +237,7 @@ const updateOrders = async (orderToUpdate: Order) => {
             <DialogClose asChild>
               <Button variant="outline" onClick={() => onSuccess()}>Cancel</Button>
             </DialogClose>
-            <Button type="submit" className="bg-[#3eb2b4]">Save changes</Button>
+            <Button type="submit" disabled={loading} className="bg-[#3eb2b4]">{loading ? 'Processing' : 'Save changes'}</Button>
           </DialogFooter>
           </form>
         </DialogContent>

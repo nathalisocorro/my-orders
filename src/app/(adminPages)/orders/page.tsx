@@ -14,7 +14,7 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, ShoppingCart } from "lucide-react"
+import { AlertCircle, ArrowUpDown, ChevronDown, MoreHorizontal, Plus, ShoppingCart } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -37,12 +37,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import ModalForm from "@/components/modal"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import ModalBase from "@/components/modalBase"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { toast } from "sonner"
 import LoadingComponent from "@/components/loading"
+import FetchOrders from "@/hooks/orders-hooks"
 
 export type Order = {
   id?: string,
@@ -53,50 +52,30 @@ export type Order = {
   userId: String
 }
 
-const fetchOrders = async () => {
-  try{
-    const response = await fetch('/api/orders')
-    console.log(response)
-    if(!response.ok) {
-      toast("There's been an error in your request")
-    }
-    const data = response.json()
-    return data
-  }
-
-  catch(err) {
-    console.log(err)
-    toast("There's been an error in your request")
-    return null
-  }
-}
-
 export default function OrdersPage() {
 
-   const [data, setData] = React.useState<any[]>([])
-   const [loading, setLoading] = React.useState(false)
-  
-    React.useEffect(() => {
-      const getOrders = async () => {
-        setLoading(true)
-        const data = await fetchOrders();
-        console.log(data)
-        setData(data.orders || [])
-        setLoading(false)
-      }
-
-      getOrders()
-    }, [])
+  const { orders, loading, deleteOrders, addOrders, updateOrders } = FetchOrders()
+  const [open, setOpen] = React.useState(false)
+  const [openAdd, setOpenAdd] = React.useState(false)
 
   const [alert, setAlert] = React.useState(false)
   const [pagination, setPagination] = React.useState<PaginationState>({
   pageIndex: 0,
   pageSize: 5,
 })
+
+const handleSave = (order: any) => {
+    if(order.id){
+      updateOrders(order)
+      return
+    }
+    addOrders(order)
+  }
+
   const [itemToDelete, setItemToDelete] = React.useState<any>(null)
 
-  const handleDelete = (item: any) => {
-    console.log('deleted', item)
+  const handleDelete = async (item: any) => {
+    await deleteOrders(item)
     setAlert(false)
   }
 
@@ -205,7 +184,7 @@ export default function OrdersPage() {
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("products").map(p => p.title).join(', ')}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("products").map(p => p).join(', ')}</div>,
   },
   {
     accessorKey: "total",
@@ -227,7 +206,6 @@ export default function OrdersPage() {
     enableHiding: false,
     cell: ({ row }) => {
       const order = row.original
-      const [open, setOpen] = React.useState(false)
       
       return (
           <>
@@ -261,7 +239,7 @@ export default function OrdersPage() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <ModalBase data={order} onSuccess={() => setOpen(false)}/>
+        <ModalBase data={order} onSuccess={() => setOpen(false)} onSave={handleSave}/>
         </Dialog>
           </>
       )
@@ -270,7 +248,7 @@ export default function OrdersPage() {
 ]
 
   const table = useReactTable({
-  data,
+  data: orders,
   columns,
   state: {
     sorting,
@@ -296,12 +274,14 @@ export default function OrdersPage() {
             <div className="w-full flex flex-col xl:flex-row justify-between xl:items-center">
               {alert && (
                 <div className="fixed top-4 left-1/2 z-30 max-w-[20rem] transform -translate-x-1/2">
-                  <Alert>
-                    <AlertTitle>You are about to delete this order</AlertTitle>
+                  <Alert  className="bg-red-100">
+                    <AlertTitle className="flex gap-2 items-center text-red-500"> 
+                      <AlertCircle />
+                      You are about to delete this order</AlertTitle>
                     <AlertDescription>
                       You will not be able to get it back later
                     </AlertDescription>
-                    <div className="flex gap-2 mt-2 justify-center">
+                    <div className="flex mt-3 gap-3 px-7">
                       <Button onClick={() => handleDelete(itemToDelete)}>Proceed</Button>
                       <Button onClick={() => setAlert(false)}>Cancel</Button>
                     </div>
@@ -313,7 +293,12 @@ export default function OrdersPage() {
                 <h3 className="text-md text-gray-500 mt-1 font-bold">Registry of all the orders made by users</h3>
               </div>
               <div>
-                <ModalForm />
+                <Dialog open={openAdd} onOpenChange={() => setOpenAdd(!openAdd)}>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => setOpenAdd(true)} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
+                  </DialogTrigger>
+                  <ModalBase onSuccess={() => setOpenAdd(false)} onSave={handleSave}/>
+              </Dialog>
               </div>
             </div>
             <div className="flex flex-col w-full mt-10">

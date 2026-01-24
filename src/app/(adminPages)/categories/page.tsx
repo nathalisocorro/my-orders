@@ -3,92 +3,12 @@
 
 import CategoriesComponent from "@/components/categories"
 import LoadingComponent from "@/components/loading"
+import FetchCategories from "@/hooks/categories-hooks"
 import { ClipboardList } from "lucide-react"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
-
-/* const categories = [{
-  id: 1,
-  title: "Home",
-  desc: "Take a look to our home products: make your home shine and your life nicer",
-  img: "./home.jpg",
-  slug: "home",
-  products: [
-    {
-      title: "Bowls set",
-      desc: "Ready to use for your next family trip, made with the best materials.",
-      img: "./bowls.jpg",
-      price: 10.5,
-      categorySlug: "home"
-    },
-    {
-      title: "Spoons set",
-      desc: "To enjoy the best goals, use the best means",
-      img: "./spoons.jpg",
-      price: 5.49,
-      categorySlug: "home"
-    }
-  ]
-},
-{
-  id: 2,
-  title: "Home",
-  desc: "Take a look to our home products: make your home shine and your life nicer",
-  img: "./home.jpg",
-  slug: "home",
-  products: [
-    {
-      title: "Bowls set",
-      desc: "Ready to use for your next family trip, made with the best materials.",
-      img: "./bowls.jpg",
-      price: 10.5,
-      categorySlug: "home"
-    },
-    {
-      title: "Spoons set",
-      desc: "To enjoy the best goals, use the best means",
-      img: "./spoons.jpg",
-      price: 5.49,
-      categorySlug: "home"
-    }
-  ]
-},
-] */
-
-const fetchCategories = async () => {
-  try{
-    const response = await fetch('/api/categories')
-    console.log(response)
-    if(!response.ok) {
-      toast("There's been an error in your request")
-    }
-    const data = response.json()
-    return data
-  }
-
-  catch(err) {
-    console.log(err)
-    toast("There's been an error in your request")
-    return null
-  }
-}
-
 
 export default function CategoriesPage() {
     
-    const [categories, setCategories] = useState<any[]>([])
-    const [loading, setLoading] = useState(false)
-
-    useEffect(() => {
-      const getCategories = async () => {
-        setLoading(true)
-        const data = await fetchCategories();
-        setCategories(data.categories || [])
-        setLoading(false)
-      }
-
-      getCategories()
-    }, [])
+    const { categories, loading } = FetchCategories()
 
     return(
       <div className="flex bg-[#d7eff5] min-h-screen justify-start">

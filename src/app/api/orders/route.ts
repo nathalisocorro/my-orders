@@ -13,7 +13,6 @@ export const GET = async () => {
     }
 }
 
-
 export const POST = async (request: NextRequest) => {
     const body = await request.json()
     console.log(body)
@@ -39,6 +38,23 @@ export const PUT = async (request: NextRequest) => {
         }
       })
         return new NextResponse(JSON.stringify({message: 'Success', order: order}), {status: 200})
+    }
+    catch(error) {
+        return new NextResponse(JSON.stringify({message: 'There has been an error processing your request'+error}), {status: 500})
+    }
+}
+
+
+export const DELETE = async (request: NextRequest) => {
+    const body = await request.json()
+    
+    try{
+      const order = await prisma.order.delete({
+        where: {
+           id: body.id
+        }
+      })
+        return new NextResponse(JSON.stringify({message: 'Success'}), {status: 200})
     }
     catch(error) {
         return new NextResponse(JSON.stringify({message: 'There has been an error processing your request'+error}), {status: 500})

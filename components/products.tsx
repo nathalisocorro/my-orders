@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Box } from "lucide-react"
 import Image from "next/image"
+import EmptyContent from "./emptyState"
 
 interface ProductsComponentProps {
     products: any[]
@@ -9,9 +10,11 @@ interface ProductsComponentProps {
 
 export default function ProductsComponent({products}: ProductsComponentProps) {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4 my-10">
-              {
-              products.map((product) => (
+      <>
+      {products.length===0 ? <EmptyContent/> :
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4 my-10">
+              {products.map((product) => (
                 <Card key={product.id} className="w-full h-full p-0 m-0 shadow-gray-400">
                   <CardHeader className="p-0">
                     <div className="relative w-full h-full">
@@ -34,8 +37,10 @@ export default function ProductsComponent({products}: ProductsComponentProps) {
                     ${product.price}
                   </CardFooter>
                 </Card>
-              ))
-            }
+              ))}
             </div>
+          }
+      </>
+        
     )
 }
