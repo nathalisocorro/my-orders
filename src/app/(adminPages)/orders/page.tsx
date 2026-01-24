@@ -57,12 +57,23 @@ export default function OrdersPage() {
   const { orders, loading, deleteOrders, addOrders, updateOrders } = FetchOrders()
   const [open, setOpen] = React.useState(false)
   const [openAdd, setOpenAdd] = React.useState(false)
+  const [editing, setEditing] = React.useState<any>(null)
 
   const [alert, setAlert] = React.useState(false)
   const [pagination, setPagination] = React.useState<PaginationState>({
   pageIndex: 0,
   pageSize: 5,
 })
+
+const handleOpen = (order: any) => {
+  setEditing(order)
+  setOpen(true)
+}
+
+const handleSuccess = () => {
+  setEditing(false)
+  setOpen(false)
+}
 
 const handleSave = (order: any) => {
     if(order.id){
@@ -209,8 +220,8 @@ const handleSave = (order: any) => {
       
       return (
           <>
-        <Dialog open={open} onOpenChange={() => setOpen(!open)}>
-        <DropdownMenu>
+        
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
@@ -227,10 +238,7 @@ const handleSave = (order: any) => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              
-                <DialogTrigger asChild>
-                  <Button onClick={() => setOpen(true)} className="w-full text-start font-normal" variant={"ghost"}>Edit order</Button>
-                </DialogTrigger>
+              <Button onClick={() => handleOpen(order)} className="w-full text-start font-normal" variant={"ghost"}>Edit order</Button>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Button variant={"ghost"} className="text-red-500 w-full"
@@ -239,8 +247,7 @@ const handleSave = (order: any) => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <ModalBase data={order} onSuccess={() => setOpen(false)} onSave={handleSave}/>
-        </Dialog>
+
           </>
       )
     },
@@ -293,11 +300,11 @@ const handleSave = (order: any) => {
                 <h3 className="text-md text-gray-500 mt-1 font-bold">Registry of all the orders made by users</h3>
               </div>
               <div>
-                <Dialog open={openAdd} onOpenChange={() => setOpenAdd(!openAdd)}>
+                <Dialog open={openAdd} onOpenChange={setOpenAdd}>
                   <DialogTrigger asChild>
                     <Button onClick={() => setOpenAdd(true)} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
                   </DialogTrigger>
-                  <ModalBase onSuccess={() => setOpenAdd(false)} onSave={handleSave}/>
+                  <ModalBase key={"new"} onSuccess={() => setOpenAdd(false)} onSave={handleSave}/>
               </Dialog>
               </div>
             </div>
@@ -311,7 +318,7 @@ const handleSave = (order: any) => {
                   }
                   className="max-w-sm bg-white"
                 />
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="xl:ml-auto m0-40">
                       Columns <ChevronDown />
@@ -432,6 +439,9 @@ const handleSave = (order: any) => {
               </div>
             </div>
           </main>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <ModalBase key={editing ? editing.id : 'editing'} data={editing} onSuccess={handleSuccess} onSave={handleSave}/>
+          </Dialog>
         </div>
     )
 }

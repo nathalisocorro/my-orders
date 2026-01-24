@@ -235,7 +235,7 @@ const showToast = (msg='Invalid operation') => {
           </div>
           <DialogFooter className="mt-4">
             <DialogClose asChild>
-              <Button variant="outline" onClick={() => onSuccess()}>Cancel</Button>
+              <Button variant="outline" onClick={onSuccess}>Cancel</Button>
             </DialogClose>
             <Button type="submit" disabled={loading} className="bg-[#3eb2b4]">{loading ? 'Processing' : 'Save changes'}</Button>
           </DialogFooter>
