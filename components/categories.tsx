@@ -32,7 +32,7 @@ export default function CategoriesComponent({categories}: CategoriesComponent) {
                   </CardContent>
 
                   <CardFooter className="pb-4 text-sm font-medium text-gray-500">
-                    {category.products.length} products fit this category
+                    Look at the products which fit this category
                   </CardFooter>
                 </Card>
                 </Link>

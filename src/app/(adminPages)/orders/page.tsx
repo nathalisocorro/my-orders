@@ -14,7 +14,7 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, ShoppingCart } from "lucide-react"
+import { AlertCircle, ArrowUpDown, ChevronDown, MoreHorizontal, Plus, ShoppingCart } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -37,65 +37,56 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import ModalForm from "@/components/modal"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import ModalBase from "@/components/modalBase"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import LoadingComponent from "@/components/loading"
+import FetchOrders from "@/hooks/orders-hooks"
 import { toast } from "sonner"
 
 export type Order = {
-  id: string,
+  id?: string,
   createdAt: string,
   total: number,
-  products: any[]   ,    
-  status: "PENDING" | "PAID" | "CANCELED",
+  products: any[],    
+  status: string,
   userId: String
-}
-
-const fetchOrders = async () => {
-  try{
-    const response = await fetch('/api/orders')
-    console.log(response)
-    if(!response.ok) {
-      toast("There's been an error in your request")
-    }
-    const data = response.json()
-    return data
-  }
-
-  catch(err) {
-    console.log(err)
-    toast("There's been an error in your request")
-    return null
-  }
 }
 
 export default function OrdersPage() {
 
-   const [data, setData] = React.useState<any[]>([])
-      const [loading, setLoading] = React.useState(false)
-  
-    React.useEffect(() => {
-      const getOrders = async () => {
-        setLoading(true)
-        const data = await fetchOrders();
-        console.log(data)
-        setData(data.orders || [])
-        setLoading(false)
-      }
-
-      getOrders()
-    }, [])
+  const { orders, loading, deleteOrders, addOrders, updateOrders } = FetchOrders()
+  const [open, setOpen] = React.useState(false)
+  const [editing, setEditing] = React.useState<Order|null>(null)
 
   const [alert, setAlert] = React.useState(false)
   const [pagination, setPagination] = React.useState<PaginationState>({
   pageIndex: 0,
-  pageSize: 5,
+  pageSize: 10,
 })
+
+const handleOpen = (order: any) => {
+  setEditing(order)
+  setOpen(true)
+}
+
+const handleSuccess = () => {
+  setEditing(null)
+  setOpen(false)
+}
+
+const handleSave = (order: Order) => {
+    if(order.id){
+      updateOrders(order)
+      return
+    }
+    addOrders(order)
+  }
+
   const [itemToDelete, setItemToDelete] = React.useState<any>(null)
 
-  const handleDelete = (item: any) => {
-    console.log('deleted', item)
+  const handleDelete = async (item: any) => {
+    await deleteOrders(item)
     setAlert(false)
   }
 
@@ -134,7 +125,7 @@ export default function OrdersPage() {
     accessorKey: "id",
     header: "ID",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("id")}</div>
+      <div>{row.getValue("id") as string}</div>
     ),
   },
   {
@@ -178,7 +169,7 @@ export default function OrdersPage() {
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("createdAt").slice(0,10)}</div>,
+    cell: ({ row }) => <div>{row.getValue<any[]>("createdAt").slice(0,10).toString()}</div>,
   },
   {
     accessorKey: "userId",
@@ -191,7 +182,7 @@ export default function OrdersPage() {
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("userId")}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue<string>("userId")}</div>,
   },
   {
     accessorKey: "products",
@@ -200,11 +191,11 @@ export default function OrdersPage() {
         <Button
           variant="ghost"
         >
-          PRODUCTS
+          PRODUCTS ID
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("products").map(p => p.title).join(', ')}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("products").map(p => p).join(', ')}</div>,
   },
   {
     accessorKey: "total",
@@ -226,12 +217,10 @@ export default function OrdersPage() {
     enableHiding: false,
     cell: ({ row }) => {
       const order = row.original
-      const [open, setOpen] = React.useState(false)
       
       return (
           <>
-        <Dialog open={open} onOpenChange={() => setOpen(!open)}>
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
@@ -241,17 +230,14 @@ export default function OrdersPage() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(order.id)}
-              className="text-center"
+              onClick={() => {navigator.clipboard.writeText(order?.id || ''), toast.success('ID copied to the clipboard')}}
+              className="flex text-center justify-center"
             >
               Copy order ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              
-                <DialogTrigger asChild>
-                  <Button onClick={() => setOpen(true)} className="w-full text-start font-normal" variant={"ghost"}>Edit order</Button>
-                </DialogTrigger>
+              <Button onClick={() => handleOpen(order)} className="w-full text-start font-normal" variant={"ghost"}>Edit order</Button>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Button variant={"ghost"} className="text-red-500 w-full"
@@ -260,8 +246,7 @@ export default function OrdersPage() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <ModalBase data={order} onSuccess={() => setOpen(false)}/>
-        </Dialog>
+
           </>
       )
     },
@@ -269,7 +254,7 @@ export default function OrdersPage() {
 ]
 
   const table = useReactTable({
-  data,
+  data: orders,
   columns,
   state: {
     sorting,
@@ -295,14 +280,16 @@ export default function OrdersPage() {
             <div className="w-full flex flex-col xl:flex-row justify-between xl:items-center">
               {alert && (
                 <div className="fixed top-4 left-1/2 z-30 max-w-[20rem] transform -translate-x-1/2">
-                  <Alert>
-                    <AlertTitle>You are about to delete this order</AlertTitle>
+                  <Alert  className="bg-red-100">
+                    <AlertTitle className="flex gap-2 items-center text-red-500"> 
+                      <AlertCircle />
+                      You are about to delete this order</AlertTitle>
                     <AlertDescription>
                       You will not be able to get it back later
                     </AlertDescription>
-                    <div className="flex gap-2 mt-2 justify-center">
-                      <Button onClick={() => handleDelete(itemToDelete)}>Proceed</Button>
-                      <Button onClick={() => setAlert(false)}>Cancel</Button>
+                    <div className="flex mt-3 gap-3 px-7">
+                      <Button disabled={loading} onClick={() => handleDelete(itemToDelete)}>Proceed</Button>
+                      <Button disabled={loading} onClick={() => setAlert(false)}>Cancel</Button>
                     </div>
                   </Alert>
                 </div>
@@ -312,7 +299,7 @@ export default function OrdersPage() {
                 <h3 className="text-md text-gray-500 mt-1 font-bold">Registry of all the orders made by users</h3>
               </div>
               <div>
-                <ModalForm />
+                <Button onClick={() => setOpen(true)} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
               </div>
             </div>
             <div className="flex flex-col w-full mt-10">
@@ -325,7 +312,7 @@ export default function OrdersPage() {
                   }
                   className="max-w-sm bg-white"
                 />
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="xl:ml-auto m0-40">
                       Columns <ChevronDown />
@@ -352,7 +339,7 @@ export default function OrdersPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className=" rounded-md border overflow-x-auto w-full">
+              <div className="rounded-md border overflow-x-auto grid place-items-center mx-auto">
                   <Table className="min-w-250 bg-white ">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -393,9 +380,9 @@ export default function OrdersPage() {
                       <TableRow>
                         <TableCell
                           colSpan={columns.length}
-                          className="h-24 text-center"
+                          className="h-30 text-center"
                         >
-                          No orders found
+                          {loading ? <LoadingComponent /> : <span>No orders found</span>}
                         </TableCell>
                       </TableRow>
                     )}
@@ -446,6 +433,9 @@ export default function OrdersPage() {
               </div>
             </div>
           </main>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <ModalBase key={editing ? editing.id : 'new'} data={editing} onSuccess={handleSuccess} onSave={handleSave}/>
+          </Dialog>
         </div>
     )
 }

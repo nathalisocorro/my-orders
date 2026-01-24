@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Label } from "@radix-ui/react-label";
-import { Bath, HomeIcon, LucideShoppingCart, Palmtree, School, ShoppingCart } from "lucide-react";
+import { Bath, HomeIcon, Palmtree, School, ShoppingCart } from "lucide-react";
 import Image from "next/image"
 import Link from "next/link";
 
