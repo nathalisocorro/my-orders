@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function FetchCategories() {
+export default function fetchCategories() {
     const [categories, setCategories] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
 
@@ -94,8 +95,20 @@ const updateCategories = async (categoryToUpdate: any) => {
   }
 }
 
+const fetchFilteredByCategory = async (cat: string) => {
+  const res = await fetch(`${process.env.BASE_URL}/api/products?category=${cat}`, {
+    cache: "no-store",
+  })
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch products")
+  }
+
+  return res.json()
+}
+
 return {
-  categories, loading, addCategories, updateCategories
+  categories, loading, addCategories, updateCategories, fetchFilteredByCategory
 }
       
 }

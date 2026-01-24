@@ -1,4 +1,6 @@
+'use client'
 import ProductsClient from "@/components/productsClient"
+import fetchCategories from "@/hooks/categories-hooks"
 
 interface Props {
   params: Promise<{
@@ -6,19 +8,8 @@ interface Props {
   }>
 }
 
-const fetchFilteredByCategory = async (cat: string) => {
-  const res = await fetch(`${process.env.BASE_URL}/api/products?category=${cat}`, {
-    cache: "no-store",
-  })
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch products")
-  }
-
-  return res.json()
-}
-
 export default async function Page({ params }: Props) {
+  const {fetchFilteredByCategory} = fetchCategories()
   const {category} = await params
   const data = await fetchFilteredByCategory(category);
 

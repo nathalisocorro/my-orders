@@ -42,6 +42,7 @@ import ModalBase from "@/components/modalBase"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import LoadingComponent from "@/components/loading"
 import FetchOrders from "@/hooks/orders-hooks"
+import { toast } from "sonner"
 
 export type Order = {
   id?: string,
@@ -56,13 +57,12 @@ export default function OrdersPage() {
 
   const { orders, loading, deleteOrders, addOrders, updateOrders } = FetchOrders()
   const [open, setOpen] = React.useState(false)
-  const [openAdd, setOpenAdd] = React.useState(false)
-  const [editing, setEditing] = React.useState<any>(null)
+  const [editing, setEditing] = React.useState<Order|null>(null)
 
   const [alert, setAlert] = React.useState(false)
   const [pagination, setPagination] = React.useState<PaginationState>({
   pageIndex: 0,
-  pageSize: 5,
+  pageSize: 10,
 })
 
 const handleOpen = (order: any) => {
@@ -71,11 +71,11 @@ const handleOpen = (order: any) => {
 }
 
 const handleSuccess = () => {
-  setEditing(false)
+  setEditing(null)
   setOpen(false)
 }
 
-const handleSave = (order: any) => {
+const handleSave = (order: Order) => {
     if(order.id){
       updateOrders(order)
       return
@@ -125,7 +125,7 @@ const handleSave = (order: any) => {
     accessorKey: "id",
     header: "ID",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("id")}</div>
+      <div>{row.getValue("id") as string}</div>
     ),
   },
   {
@@ -169,7 +169,7 @@ const handleSave = (order: any) => {
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("createdAt").slice(0,10)}</div>,
+    cell: ({ row }) => <div>{row.getValue<any[]>("createdAt").slice(0,10).toString()}</div>,
   },
   {
     accessorKey: "userId",
@@ -182,7 +182,7 @@ const handleSave = (order: any) => {
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue<any[]>("userId")}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue<string>("userId")}</div>,
   },
   {
     accessorKey: "products",
@@ -191,7 +191,7 @@ const handleSave = (order: any) => {
         <Button
           variant="ghost"
         >
-          PRODUCTS
+          PRODUCTS ID
         </Button>
       )
     },
@@ -220,7 +220,6 @@ const handleSave = (order: any) => {
       
       return (
           <>
-        
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -231,8 +230,8 @@ const handleSave = (order: any) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(order?.id || '')}
-              className="text-center"
+              onClick={() => {navigator.clipboard.writeText(order?.id || ''), toast.success('ID copied to the clipboard')}}
+              className="flex text-center justify-center"
             >
               Copy order ID
             </DropdownMenuItem>
@@ -289,8 +288,8 @@ const handleSave = (order: any) => {
                       You will not be able to get it back later
                     </AlertDescription>
                     <div className="flex mt-3 gap-3 px-7">
-                      <Button onClick={() => handleDelete(itemToDelete)}>Proceed</Button>
-                      <Button onClick={() => setAlert(false)}>Cancel</Button>
+                      <Button disabled={loading} onClick={() => handleDelete(itemToDelete)}>Proceed</Button>
+                      <Button disabled={loading} onClick={() => setAlert(false)}>Cancel</Button>
                     </div>
                   </Alert>
                 </div>
@@ -300,12 +299,7 @@ const handleSave = (order: any) => {
                 <h3 className="text-md text-gray-500 mt-1 font-bold">Registry of all the orders made by users</h3>
               </div>
               <div>
-                <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-                  <DialogTrigger asChild>
-                    <Button onClick={() => setOpenAdd(true)} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
-                  </DialogTrigger>
-                  <ModalBase key={"new"} onSuccess={() => setOpenAdd(false)} onSave={handleSave}/>
-              </Dialog>
+                <Button onClick={() => setOpen(true)} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
               </div>
             </div>
             <div className="flex flex-col w-full mt-10">
@@ -440,7 +434,7 @@ const handleSave = (order: any) => {
             </div>
           </main>
           <Dialog open={open} onOpenChange={setOpen}>
-            <ModalBase key={editing ? editing.id : 'editing'} data={editing} onSuccess={handleSuccess} onSave={handleSave}/>
+            <ModalBase key={editing ? editing.id : 'new'} data={editing} onSuccess={handleSuccess} onSave={handleSave}/>
           </Dialog>
         </div>
     )

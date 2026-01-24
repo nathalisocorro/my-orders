@@ -73,7 +73,7 @@ interface ModalBaseProps {
 }
 export default function ModalBase({data, onSuccess, onSave} : ModalBaseProps) {
 
-  const { loading, addOrders } = FetchOrders()
+  const { loading } = FetchOrders()
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>(data ? [...data.products] : [])
   const [users, setUsers] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])

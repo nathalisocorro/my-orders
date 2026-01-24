@@ -34,7 +34,7 @@ export default function FetchOrders() {
       getOrders()
     }, [])
 
-    const addOrders = async (newOrder: any) => {
+    const addOrders = async (newOrder: Order) => {
       setLoading(true)
     try{
     const response = await fetch('/api/orders', {
