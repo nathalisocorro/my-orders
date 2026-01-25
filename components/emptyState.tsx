@@ -1,5 +1,4 @@
-import { SearchAlert } from "lucide-react";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./ui/empty";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./ui/empty";
 
 export default function EmptyContent() {
     return (

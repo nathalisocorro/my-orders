@@ -1,6 +1,6 @@
-'use client'
 import ProductsClient from "@/components/productsClient"
-import fetchCategories from "@/hooks/categories-hooks"
+import { fetchFilteredByCategory } from "@/hooks/get-filtered"
+
 
 interface Props {
   params: Promise<{
@@ -8,11 +8,14 @@ interface Props {
   }>
 }
 
-export default async function Page({ params }: Props) {
-  const {fetchFilteredByCategory} = fetchCategories()
-  const {category} = await params
-  const data = await fetchFilteredByCategory(category);
+const fetchFiltered = async (c: string) => {
+  const data = await fetchFilteredByCategory(c)
+  return data
+}
 
+export default async function Page({ params }: Props) {
+  const {category} = await params
+  const data = await fetchFiltered(category)
   return (
     <ProductsClient
       category={category}
@@ -20,3 +23,4 @@ export default async function Page({ params }: Props) {
     />
   )
 }
+

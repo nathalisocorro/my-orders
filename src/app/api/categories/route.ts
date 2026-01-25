@@ -32,3 +32,37 @@ export const POST = async (request: NextRequest) => {
         return new NextResponse(JSON.stringify({message: 'There has been an error processing your request'+error}), {status: 500})
     }
 }
+
+export const PUT = async (request: NextRequest) => {
+    const body = await request.json()
+    
+    try{
+      const category = await prisma.category.update({
+        data: body,
+        where: {
+           id: body.id
+        }
+      })
+        return new NextResponse(JSON.stringify({message: 'Success', category: category}), {status: 200})
+    }
+    catch(error) {
+        return new NextResponse(JSON.stringify({message: 'There has been an error processing your request'+error}), {status: 500})
+    }
+}
+
+
+export const DELETE = async (request: NextRequest) => {
+    const body = await request.json()
+    
+    try{
+      const category = await prisma.category.delete({
+        where: {
+           id: body.id
+        }
+      })
+        return new NextResponse(JSON.stringify({message: 'Success'}), {status: 200})
+    }
+    catch(error) {
+        return new NextResponse(JSON.stringify({message: 'There has been an error processing your request'+error}), {status: 500})
+    }
+}

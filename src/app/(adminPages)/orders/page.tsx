@@ -37,27 +37,19 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog } from "@/components/ui/dialog"
 import ModalBase from "@/components/modalBase"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import LoadingComponent from "@/components/loading"
 import FetchOrders from "@/hooks/orders-hooks"
 import { toast } from "sonner"
-
-export type Order = {
-  id?: string,
-  createdAt: string,
-  total: number,
-  products: any[],    
-  status: string,
-  userId: String
-}
+import { Order } from "@/types"
 
 export default function OrdersPage() {
 
   const { orders, loading, deleteOrders, addOrders, updateOrders } = FetchOrders()
   const [open, setOpen] = React.useState(false)
-  const [editing, setEditing] = React.useState<Order|null>(null)
+  const [editing, setEditing] = React.useState<Order|undefined>(undefined)
 
   const [alert, setAlert] = React.useState(false)
   const [pagination, setPagination] = React.useState<PaginationState>({
@@ -71,7 +63,7 @@ const handleOpen = (order: any) => {
 }
 
 const handleSuccess = () => {
-  setEditing(null)
+  setEditing(undefined)
   setOpen(false)
 }
 
@@ -88,6 +80,11 @@ const handleSave = (order: Order) => {
   const handleDelete = async (item: any) => {
     await deleteOrders(item)
     setAlert(false)
+  }
+
+  const handleAdd = () => {
+    setEditing(undefined)
+    setOpen(true)
   }
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -299,7 +296,7 @@ const handleSave = (order: Order) => {
                 <h3 className="text-md text-gray-500 mt-1 font-bold">Registry of all the orders made by users</h3>
               </div>
               <div>
-                <Button onClick={() => setOpen(true)} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
+                <Button onClick={handleAdd} className="bg-[#3eb2b4] hover:bg-[#FDBB2D] mt-2 xl:mt-0">Add Order<Plus /></Button>
               </div>
             </div>
             <div className="flex flex-col w-full mt-10">

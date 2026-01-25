@@ -1,4 +1,4 @@
-import { Order } from "@/src/app/(adminPages)/orders/page";
+import { Order } from "@/types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 

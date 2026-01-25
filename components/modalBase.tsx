@@ -13,6 +13,8 @@ import {
 } from "./ui/dropdown-menu";
 import { toast } from "sonner";
 import FetchOrders from "@/hooks/orders-hooks";
+import { Order } from "@/types";
+
 
 /* const users = [
     {
@@ -67,7 +69,7 @@ const products = [{
   
   ] */
 interface ModalBaseProps {
-  data?: any,
+  data?: Order,
   onSuccess: () => void,
   onSave: (o: any) => void,
 }
@@ -120,16 +122,13 @@ const totalPrice = useMemo(() => {
     .reduce((acc, product) => acc + product.price, 0)
 }, [products, selectedProductIds])
 
-const showToast = (msg='Invalid operation') => {
-  toast(msg)
-}
 
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedProductIds.length || selectedProductIds.length === 0) {
-      showToast("You must pick at least one item from the products list")
+      toast.warning("You must pick at least one item from the products list")
       return
     }
     const formData = new FormData(e.currentTarget)
@@ -138,7 +137,7 @@ const showToast = (msg='Invalid operation') => {
     console.log(formValues)
 
     if (!formValues.userId || formValues.userId === '') {
-      showToast("You must select an user")
+      toast.warning("You must select an user")
       return
     }
     const order = {
@@ -150,16 +149,15 @@ const showToast = (msg='Invalid operation') => {
       createdAt: data ? data.createdAt : null,
     }
     setSelectedProductIds([]);
-    console.log('la orden a guardar', order)
     onSave(order);
-    showToast('Success! Your changes have been saved')
+    toast.success('Success! Your changes have been saved')
     onSuccess()
   }
 
     return (
         <>
         <DialogContent className="sm:max-w-100">
-          <form ref={ref} onSubmit={onSubmit}>
+          <form ref={ref} onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{data ? "Edit order" : "Add order"}</DialogTitle>
             <DialogDescription>
@@ -169,7 +167,7 @@ const showToast = (msg='Invalid operation') => {
           <div className="grid gap-4 mt-4">
             <div className="grid gap-3">
               <Label htmlFor="status">Status</Label>
-              <Select name="status" required defaultValue={data ? data.status : null}>
+              <Select name="status" required defaultValue={data ? data.status : undefined}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a status" />
                 </SelectTrigger>
@@ -185,7 +183,7 @@ const showToast = (msg='Invalid operation') => {
             </div>
             <div className="grid gap-3">
               <Label htmlFor="userId">Username</Label>
-              <Select name="userId" required defaultValue={data ? data.userId : null}>
+              <Select name="userId" required defaultValue={data ? data.userId : undefined}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an user" />
                 </SelectTrigger>

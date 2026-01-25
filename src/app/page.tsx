@@ -1,15 +1,17 @@
+import EmptyContent from "@/components/emptyState";
 import FooterElement from "@/components/footer";
 import LeftDrawer from "@/components/leftDrawer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { getHomeData } from "@/lib/home";
 import { Label } from "@radix-ui/react-label";
 import { Bath, HomeIcon, Palmtree, School, ShoppingCart } from "lucide-react";
 import Image from "next/image"
 import Link from "next/link";
 
-const schoolProds = [
+/* const schoolProds = [
     {
       id: 3,
       title: "School Bag",
@@ -49,13 +51,10 @@ const schoolProds = [
       price: 5.49,
       categorySlug: "home"
     },
-  ]
+  ] */
 
-export default function Home() {
-
-  const slicedHP = homeProds.slice(0, 3)
-  const slicedBBP = bathBodyProds.slice(0, 3)
-  const slicedSP = schoolProds.slice(0, 3)
+export default async function Home() {
+  const categories = await getHomeData(3)
 
   return (
     <>
@@ -92,110 +91,47 @@ export default function Home() {
           <div className="nowrap mt-10 bg-transparent">
           <div><h2 className="text-xl font-extrabold mb-3">Some of our products: </h2></div>
           <div>
-            
-            <Card className="font-extrabold text-md text-[#0d393a] mb-4 bg-white hover:bg-[#f8f4ea]">
-            <CardHeader className="flex gap-4 justify-start items-center"><HomeIcon/><h2 className="my-1 text-2xl">Home: </h2> </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4">
-              {
-              slicedHP.map((product) => (
-                <Card key={product.id} className="w-full h-full p-0 m-0 shadow-gray-400">
-                  <CardHeader className="p-0">
-                    <div className="relative w-full h-full">
-                      <Image
-                      src={"./placeholder.svg"}
-                      alt={product.title}
-                      height={"80"}
-                      width={"80"}
-                      className="object-fill w-full max-h-50 rounded-lg"
-                      />
-                      <Badge className="absolute top-3 right-2" color="#3eb2b4">{product.categorySlug}</Badge>
-                      <h2 className="absolute bottom-3 left-3 text-lg font-bold">{product.title}</h2>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="font-medium text-md">
-                    {product.desc}
+            {
+              categories.length === 0 ? <EmptyContent />
+              :
+              categories.map(category => (
+                  <Card key={category.id} className="font-extrabold text-md text-[#0d393a] mb-4 bg-white hover:bg-[#f8f4ea]">
+                  <CardHeader className="flex gap-4 justify-start items-center"><h2 className="my-1 text-2xl">{category.title}</h2></CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4">
+                    {
+                      category.products.map(product => (
+                          <Card key={product.id} className="w-full h-full p-0 m-0 shadow-gray-400">
+                            <CardHeader className="p-0">
+                              <div className="relative w-full h-full">
+                                <Image
+                                src={product.img || "./placeholder.svg"}
+                                alt={product.title}
+                                height={"80"}
+                                width={"80"}
+                                className="object-fill w-full max-h-50 rounded-lg"
+                                />
+                                <Badge className="absolute top-3 right-2" color="#3eb2b4">{product.categorySlug}</Badge>
+                                <h2 className="absolute bottom-3 left-3 text-lg font-bold">{product.title}</h2>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="font-medium text-md">
+                              {product.desc}
+                            </CardContent>
+
+                            {<CardFooter className="flex justify-between pb-4 text-xl font-extrabold text-[#FDBB2D]">
+                              <h2>${product.price.toString()}</h2>
+                            </CardFooter>}
+                          </Card>
+                      ))
+                    }
+                  </div>
                   </CardContent>
 
-                  <CardFooter className="pb-4 text-xl font-extrabold text-[#FDBB2D]">
-                    ${product.price}
-                  </CardFooter>
+                  <CardFooter className="flex my-1 justify-center text-[#0d393a] "><Link className="hover:text-[#FDBB2D]" href={`/categories/${category.slug}`}>See more...</Link></CardFooter>
                 </Card>
               ))
             }
-            </div>
-            </CardContent>
-
-            <CardFooter className="flex my-1 justify-center text-[#0d393a] "><Link className="hover:text-[#FDBB2D]" href={"/products"}>See more...</Link></CardFooter>
-          </Card>
-
-          <Card className="font-extrabold text-md text-[#0d393a] mt-4 bg-white hover:bg-[#f8f4ea]">
-            <CardHeader className="flex gap-4 justify-start items-center"><Bath/><h2 className="my-1 text-2xl">Bath&Body: </h2> </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4">
-              {
-              slicedBBP.map((product) => (
-                <Card key={product.id} className="w-full h-full p-0 m-0 shadow-gray-400">
-                  <CardHeader className="p-0">
-                    <div className="relative w-full h-full">
-                      <Image
-                      src={"./placeholder.svg"}
-                      alt={product.title}
-                      height={"80"}
-                      width={"80"}
-                      className="object-fill w-full max-h-50 rounded-lg"
-                      />
-                      <Badge className="absolute top-3 right-2" color="#3eb2b4">{product.categorySlug}</Badge>
-                      <h2 className="absolute bottom-3 left-3 text-lg font-bold">{product.title}</h2>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="font-medium text-md">
-                    {product.desc}
-                  </CardContent>
-
-                  <CardFooter className="pb-4 text-xl font-extrabold text-[#FDBB2D]">
-                    ${product.price}
-                  </CardFooter>
-                </Card>
-              ))
-            }
-            </CardContent>
-
-            <CardFooter className="flex my-1 justify-center text-[#0d393a]"><Link className="hover:text-[#FDBB2D]" href={"/products"}>See more...</Link></CardFooter>
-          </Card>
-
-          <Card className="font-extrabold text-md text-[#0d393a] mt-4 bg-white hover:bg-[#f8f4ea]">
-            <CardHeader className="flex gap-4 justify-start items-center"> <School /> <h2 className="my-1 text-2xl">School: </h2></CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-center gap-4">
-              {
-              slicedSP.map((product) => (
-                <Card key={product.id} className="w-full h-full p-0 m-0 shadow-gray-400">
-                  <CardHeader className="p-0">
-                    <div className="relative w-full h-full">
-                      <Image
-                      src={"./placeholder.svg"}
-                      alt={product.title}
-                      height={"80"}
-                      width={"80"}
-                      className="object-fill w-full max-h-50 rounded-lg"
-                      />
-                      <Badge className="absolute top-3 right-2" color="#3eb2b4">{product.categorySlug}</Badge>
-                      <h2 className="absolute bottom-3 left-3 text-lg font-bold">{product.title}</h2>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="font-medium text-md">
-                    {product.desc}
-                  </CardContent>
-
-                  <CardFooter className="pb-4 text-xl font-extrabold text-[#FDBB2D]">
-                    ${product.price}
-                  </CardFooter>
-                </Card>
-              ))
-            }
-            </CardContent>
-
-            <CardFooter className="flex my-1 justify-center text-[#0d393a]"><Link className="hover:text-[#FDBB2D]" href={"/products"}>See more...</Link></CardFooter>
-          </Card>
           </div>
             
             

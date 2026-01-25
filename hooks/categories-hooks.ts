@@ -1,4 +1,6 @@
+'use client'
 
+import { Category } from "@/types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -34,8 +36,7 @@ export default function fetchCategories() {
       getCategories()
     }, [])
 
-
-    const addCategories = async (newCategory: any) => {
+const addCategories = async (newCategory: any) => {
         setLoading(true)
     try{
     const response = await fetch('/api/categories', {
@@ -53,7 +54,7 @@ export default function fetchCategories() {
     }
     const data = await response.json()
     console.log(data)
-    setCategories((prev) => [...prev, data.order])
+    setCategories((prev) => [...prev, data.category])
   }
 
   catch(err) {
@@ -95,20 +96,35 @@ const updateCategories = async (categoryToUpdate: any) => {
   }
 }
 
-const fetchFilteredByCategory = async (cat: string) => {
-  const res = await fetch(`${process.env.BASE_URL}/api/products?category=${cat}`, {
-    cache: "no-store",
-  })
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch products")
+const deleteCategories = async (category: Category) => {
+  setLoading(true)
+  try{
+    const response = await fetch('/api/categories', {
+      method:'DELETE',
+      body: JSON.stringify({
+        id: category.id
+      })
+    })
+    console.log(response)
+    if(!response.ok) {
+      toast("There's been an error in your request")
+    }
+    const data = response.json()
+    console.log(data)
+    setCategories(((prev) => prev.filter((t) => (t.id != category.id))))
   }
 
-  return res.json()
+  catch(err) {
+    console.error(err)
+    toast("There's been an error in your request")
+  } finally{
+    setLoading(false)
+  }
 }
 
+
 return {
-  categories, loading, addCategories, updateCategories, fetchFilteredByCategory
+  categories, loading, addCategories, updateCategories, deleteCategories
 }
       
 }
