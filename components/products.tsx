@@ -85,8 +85,13 @@ export default function ProductsComponent() {
                       <h2 className="absolute bottom-3 left-3 text-lg font-bold">{product.title}</h2>
                     </div>
                   </CardHeader>
-                  <CardContent className="font-medium text-md">
-                    {product.desc}
+                  <CardContent className="grid gap-2 font-medium text-md">
+                    <div className="text-sm text-gray-500">
+                      ID: {product.id}
+                    </div>
+                    <div>
+                      {product.desc}
+                    </div>
                   </CardContent>
 
             <CardFooter className="flex justify-between pb-4 text-xl font-extrabold text-[#FDBB2D]">

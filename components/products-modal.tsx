@@ -78,7 +78,7 @@ export default function ProductsModal({data, onSuccess, onSave}: ModalProps) {
             <Field key={'price'} className="gap-1">
               <FieldLabel>Price</FieldLabel>
               <FieldContent>
-                <Input type="number" min={0} required name="price" defaultValue={data ? data.price : 0} placeholder="Insert the price"/>
+                <Input type="number" step={'0.01'} min={0} required name="price" defaultValue={data ? data.price : 0} placeholder="Insert the price"/>
               </FieldContent>
             </Field>
             <Field>
