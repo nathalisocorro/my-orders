@@ -122,16 +122,13 @@ const totalPrice = useMemo(() => {
     .reduce((acc, product) => acc + product.price, 0)
 }, [products, selectedProductIds])
 
-const showToast = (msg='Invalid operation') => {
-  toast(msg)
-}
 
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedProductIds.length || selectedProductIds.length === 0) {
-      showToast("You must pick at least one item from the products list")
+      toast.warning("You must pick at least one item from the products list")
       return
     }
     const formData = new FormData(e.currentTarget)
@@ -140,7 +137,7 @@ const showToast = (msg='Invalid operation') => {
     console.log(formValues)
 
     if (!formValues.userId || formValues.userId === '') {
-      showToast("You must select an user")
+      toast.warning("You must select an user")
       return
     }
     const order = {
@@ -152,16 +149,15 @@ const showToast = (msg='Invalid operation') => {
       createdAt: data ? data.createdAt : null,
     }
     setSelectedProductIds([]);
-    console.log('la orden a guardar', order)
     onSave(order);
-    showToast('Success! Your changes have been saved')
+    toast.success('Success! Your changes have been saved')
     onSuccess()
   }
 
     return (
         <>
         <DialogContent className="sm:max-w-100">
-          <form ref={ref} onSubmit={onSubmit}>
+          <form ref={ref} onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{data ? "Edit order" : "Add order"}</DialogTitle>
             <DialogDescription>
