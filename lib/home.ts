@@ -11,5 +11,5 @@ export async function getHomeData(limit = 3) {
         orderBy: { createdAt: "desc" },
       },
     },
-  })
+  });
 }
