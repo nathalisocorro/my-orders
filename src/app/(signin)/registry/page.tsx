@@ -14,6 +14,7 @@ import { Key, KeyRound, Mail, User, User2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const ref = useRef<HTMLFormElement>(null);
@@ -31,7 +32,7 @@ export default function SignUp() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
       !credentials.username ||
@@ -40,8 +41,23 @@ export default function SignUp() {
       credentials.email === "" ||
       !credentials.password ||
       credentials.password === ""
-    )
-      return;
+    ) return;
+
+    try{
+        const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        credentials: "include",
+        body: JSON.stringify(credentials),
+      })
+        if (response.status === 401){
+          toast.error("Invalid credentials")
+        }
+      }
+      catch(error){
+        toast.error(error as string)
+      }
+
+    router.push("/");
 
     router.push("/login");
   };
@@ -54,7 +70,7 @@ export default function SignUp() {
         <CardHeader className="text-4xl mt-3 text-[#268889] mb-8 font-extrabold flex flex-col items-center justify-center">
           Sign Up
           <CardDescription className="font-bold">
-            Sign up and discover the word with us{" "}
+            Sign up and discover the word with us
           </CardDescription>
         </CardHeader>
         <form ref={ref} onSubmit={handleSubmit}>

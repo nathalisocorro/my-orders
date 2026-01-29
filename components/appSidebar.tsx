@@ -11,7 +11,6 @@ import {
 import {
   Box,
   ClipboardList,
-  ListOrdered,
   LogOut,
   Palmtree,
   PalmtreeIcon,
@@ -25,10 +24,32 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-export default function AppSidebar() {
+interface SideBarProps {
+  user: {
+    username: string,
+    email: string,
+    id: string
+  } | null
+}
+
+export default function AppSidebar({user} : SideBarProps) {
   const pathname = usePathname();
-  const router = useRouter();
+  const router = useRouter()
+  const handleLogOut = async () => {
+    try{
+        const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      })
+        if (response.ok) toast.success("Successful log out")
+      }
+      catch(error){
+        toast.error(error as string)
+      }
+      router.push('/login')
+  }
+
   return (
     <>
       <Sidebar>
@@ -98,13 +119,13 @@ export default function AppSidebar() {
             />
             <AvatarFallback>UN</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <h3>Logged User</h3>
-            <h4>user@gmail.com</h4>
+          <div className="flex flex-col text-sm">
+            <h3>{user ? user.username : 'User'}</h3>
+            <h4>{user ? user.email : 'Email'}</h4>
           </div>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button className="ml-10" variant="ghost">
+              <Button variant="ghost" onClick={() => handleLogOut()}>
                 <LogOut />
               </Button>
             </TooltipTrigger>

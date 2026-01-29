@@ -14,6 +14,7 @@ import { Key, KeyRound, User, User2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function Login() {
   const ref = useRef<HTMLFormElement>(null);
@@ -30,7 +31,7 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
       !credentials.email ||
@@ -39,6 +40,20 @@ export default function Login() {
       credentials.password === ""
     )
       return;
+
+      try{
+        const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        credentials: "include",
+        body: JSON.stringify(credentials),
+      })
+        if (response.status === 401){
+          toast.error("Invalid credentials")
+        }
+      }
+      catch(error){
+        toast.error(error as string)
+      }
 
     router.push("/");
   };
