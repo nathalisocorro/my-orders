@@ -1,9 +1,8 @@
 export declare type PrismaConfig = {
-
   // Whether features with an unstable API are enabled.
   experimental: {
     externalTables: boolean;
-  },
+  };
 
   // The path to the schema file, or path to a folder that shall be recursively searched for *.prisma files.
   schema?: string;
@@ -24,11 +23,10 @@ export declare type PrismaConfig = {
   typedSql?: {
     path: string;
   };
-  
+
   // Database connection configuration
   datasource?: {
     url: string;
     shadowDatabaseUrl?: string;
-  }
-  
+  };
 };
